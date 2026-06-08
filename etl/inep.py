@@ -1,0 +1,1 @@
+# ainda em construcao preciso configurar o google cloud e bigquery para extrair da base de dados, vai levar tempo (https://basedosdados.org/search?organization=inep&page=1)
