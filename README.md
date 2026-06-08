@@ -30,10 +30,10 @@ Os dados fiscais de despesas e receitas educacionais são extraídos em tempo re
 ### 2. INEP (nao estruturado ainda)
 Os dados de desempenho e infraestrutura estao na tabela `fato_indicadores_desempenho` para permitir o cruzamento Custo-Aluno vs. Aprendizado.
 
-#### Bases a serem utilizadas (Mapeadas para o Projeto)
-- **IDEB (Índice de Desenvolvimento da Educação Básica):** Notas consolidadas dos Anos Iniciais e Anos Finais da rede municipal para avaliar proficiência e fluxo escolar.
+#### Bases a serem utilizadas
+- **IDEB (Índice de Desenvolvimento da Educação Básica):** Notas consolidadas dos Anos Iniciais e Anos Finais da rede municipal.
 - **Censo Escolar (Matrículas e Docentes):** Total de matrículas na rede pública municipal para cálculo do indicador de gasto per capita (Custo-Aluno).
-- **Indicador de Nível Socioeconômico (INSE):** Utilizado obrigatoriamente para contextualizar os resultados do IDEB, permitindo comparar municípios de perfis sociais semelhantes.
+- **Indicador de Nível Socioeconômico (INSE):** Utilizado  para contextualizar os resultados do IDEB, permitindo comparar municípios de perfis sociais semelhantes.
 - **Taxa de Rendimento Escolar:** Índices de aprovação, reprovação e abandono por ano letivo.
 
 ---
