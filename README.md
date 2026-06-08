@@ -42,10 +42,11 @@ Os dados de desempenho e infraestrutura estao na tabela `fato_indicadores_desemp
 
 ### O que funciona no momento
 - **Extração Siconfi:** O script `etl/siconfi.py` extrai com sucesso os dados do RREO Anexo 08, remove os caracteres especiais e gera chaves de texto exclusivas (`cod_conta_real`) para popular a dimensão sem misturar duplicidades orçamentárias.
-- - **Execução do ETL via Streamlit Local**
+- - **Execução via Streamlit Local:**
+- - **Execução via Streamlit Cloud:** https://dashboard-publico-alpha.streamlit.app/  (arrumado)
 
 ### O que NÃO está Funcionando
-- **Execução do ETL via Streamlit Cloud:** 
+
 - **Extracao de Indicadores INEP:** Diferente do Siconfi que possui API estruturada, as bases do INEP exigem download manual de planilhas de portais de dados abertos e tratamento prévio via scripts locais (arquivos `.csv`) para posterior injeção na tabela `fato_indicadores_desempenho`. O painel ainda não possui um botão de "downlaod automático" para o INEP.
 
 ---
