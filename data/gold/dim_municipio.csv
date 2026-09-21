@@ -1,0 +1,27 @@
+sk_municipio,cod_ibge,nome_municipio,sigla_uf,regiao,populacao_censo_2022,porte_populacional,grupo_analitico
+3529005,3529005,Marília,SP,Sudeste,237627,Médio-Grande Porte,Polo Central
+3516705,3516705,Garça,SP,Sudeste,42110,Pequeno Porte II,Região Imediata
+3540002,3540002,Pompeia,SP,Sudeste,20196,Pequeno Porte I,Região Imediata
+3556602,3556602,Vera Cruz,SP,Sudeste,10193,Pequeno Porte I,Região Imediata
+3534005,3534005,Oriente,SP,Sudeste,6176,Pequeno Porte I,Região Imediata
+3514403,3514403,Echaporã,SP,Sudeste,6005,Pequeno Porte I,Região Imediata
+3533700,3533700,Ocauçu,SP,Sudeste,4038,Pequeno Porte I,Região Imediata
+3527702,3527702,Lupércio,SP,Sudeste,3981,Pequeno Porte I,Região Imediata
+3501400,3501400,Álvaro de Carvalho,SP,Sudeste,4824,Pequeno Porte I,Região Imediata
+3501509,3501509,Alvinlândia,SP,Sudeste,3000,Pequeno Porte I,Região Imediata
+3517703,3517703,Guaimbê,SP,Sudeste,5429,Pequeno Porte I,Região Imediata
+3526001,3526001,Júlio Mesquita,SP,Sudeste,4430,Pequeno Porte I,Região Imediata
+3541703,3541703,Quintana,SP,Sudeste,6296,Pequeno Porte I,Região Imediata
+3516606,3516606,Gália,SP,Sudeste,6380,Pequeno Porte I,Região Imediata
+3506003,3506003,Bauru,SP,Sudeste,379146,Grande Porte,Polo Centro-Oeste
+3504008,3504008,Assis,SP,Sudeste,101409,Médio-Grande Porte,Polo Centro-Oeste
+3555000,3555000,Tupã,SP,Sudeste,63928,Médio Porte,Polo Centro-Oeste
+3534708,3534708,Ourinhos,SP,Sudeste,103970,Médio-Grande Porte,Polo Centro-Oeste
+3527108,3527108,Lins,SP,Sudeste,74779,Médio Porte,Polo Centro-Oeste
+3541406,3541406,Presidente Prudente,SP,Sudeste,225668,Médio-Grande Porte,Peer Group Homólogo
+3502804,3502804,Araçatuba,SP,Sudeste,200124,Médio-Grande Porte,Peer Group Homólogo
+3548906,3548906,São Carlos,SP,Sudeste,254484,Grande Porte,Peer Group Homólogo
+3503208,3503208,Araraquara,SP,Sudeste,242228,Grande Porte,Peer Group Homólogo
+3543907,3543907,Rio Claro,SP,Sudeste,201418,Médio-Grande Porte,Peer Group Homólogo
+3507506,3507506,Botucatu,SP,Sudeste,145155,Médio-Grande Porte,Peer Group Homólogo
+3525300,3525300,Jaú,SP,Sudeste,133448,Médio-Grande Porte,Peer Group Homólogo

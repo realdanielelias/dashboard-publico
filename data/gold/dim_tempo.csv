@@ -1,0 +1,12 @@
+sk_tempo,ano,eh_ano_saeb,ciclo_avaliacao,decada,quinquenio
+2015,2015,True,Ciclo SAEB,2010,2015-2019
+2016,2016,False,Interstício,2010,2015-2019
+2017,2017,True,Ciclo SAEB,2010,2015-2019
+2018,2018,False,Interstício,2010,2015-2019
+2019,2019,True,Ciclo SAEB,2010,2015-2019
+2020,2020,False,Interstício,2020,2020-2024
+2021,2021,True,Ciclo SAEB,2020,2020-2024
+2022,2022,False,Interstício,2020,2020-2024
+2023,2023,True,Ciclo SAEB,2020,2020-2024
+2024,2024,False,Interstício,2020,2020-2024
+2025,2025,True,Ciclo SAEB,2020,2025-2029

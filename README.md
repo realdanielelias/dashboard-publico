@@ -25,41 +25,42 @@ O fluxo de processamento organiza-se em três camadas de maturidade:
 * **Camada Staging (Silver / Dados Higienizados):** Tabelas normalizadas e limpas (`data/silver/stg_*.csv`), onde são resolvidos problemas de células mescladas, inconsistências de tipo, variações de nomenclatura contábil e conversão de formatos amplos (*wide*) para longos (*tidy*).
 * **Camada Analytics (Gold / Data Warehouse Dimensional):** Estrutura modelada em Esquema Estrela no PostgreSQL, composta por dimensões conformes desnormalizadas, tabela fato de snapshot consolidada, chaves substitutas inteiras (`sk_`), registros sentinela (`-1`) e *views* analíticas para pré-computação de KPIs.
 
+```text
 [ Siconfi (API) ]    [ Censo INEP (.ods) ]    [ IDEB/SAEB (.xlsx) ]    [ INSE (.parquet) ]
-           │                     │                         │                       │
-           ▼                     ▼                         ▼                       ▼
-  ┌────────────────────────────────────────────────────────────────────────────────────────┐
-  │                       CAMADA SILVER (data/silver/stg_*.csv)                            │
-  │       Limpeza, Regex contábil, Forward-Fill, normalização longa e tipagem estrita       │
-  └───────────────────────────────────┬────────────────────────────────────────────────────┘
-                                      │
-                                      ▼
-  ┌────────────────────────────────────────────────────────────────────────────────────────┐
-  │                    CAMADA GOLD / POSTGRESQL (Star Schema - Kimball)                    │
-  │                                                                                        │
-  │    dim_tempo              fato_execucao_educacional                   dim_rede         │
-  │  ┌────────────┐        ┌──────────────────────────────┐            ┌─────────────┐     │
-  │  │ sk_tempo   │◄──┐    │ sk_municipio (FK)            │     ┌─────►│ sk_rede     │     │
-  │  └────────────┘   │    │ sk_tempo (FK)                │     │      └─────────────┘     │
-  │                   ├────┤ sk_rede (FK)                 ├─────┤                          │
-  │  dim_municipio    │    │ ---------------------------- │                                │
-  │  ┌────────────┐   │    │ Despesas (Liq/Emp por Subf.) │                                │
-  │  │sk_municipio├───┘    │ Matrículas, Docentes, Turmas │                                │
-  │  └────────────┘        │ IDEB, Metas, SAEB, INSE      │                                │
-  │                        └──────────────┬───────────────┘                                │
-  └───────────────────────────────────────┼────────────────────────────────────────────────┘
-                                          │
-                                          ▼
-                         [ VIEWS ANALÍTICAS & KPIS ]
-                   ├── vw_fato_educacao_kpis
-                   └── vw_benchmark_municipal_estadual
-                                          │
-                                          ▼
-                     [ STREAMLIT DASHBOARD (app.py) ]
-                   ├── 1. Visão Executiva (Mandato & Orçamento)
-                   ├── 2. Diagnóstico & Peer Group (Custo x IDEB)
-                   └── 3. Responsabilidade Federativa & SAEB
-
+        │                     │                         │                       │
+        ▼                     ▼                         ▼                       ▼
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                       CAMADA SILVER (data/silver/stg_*.csv)                            │
+│       Limpeza, Regex contábil, Forward-Fill, normalização longa e tipagem estrita       │
+└───────────────────────────────────┬────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                    CAMADA GOLD / POSTGRESQL (Star Schema - Kimball)                    │
+│                                                                                        │
+│    dim_tempo              fato_execucao_educacional                   dim_rede         │
+│  ┌────────────┐        ┌──────────────────────────────┐            ┌─────────────┐     │
+│  │ sk_tempo   │◄──┐    │ sk_municipio (FK)            │     ┌─────►│ sk_rede     │     │
+│  └────────────┘   │    │ sk_tempo (FK)                │     │      └─────────────┘     │
+│                   ├────┤ sk_rede (FK)                 ├─────┤                          │
+│  dim_municipio    │    │ ---------------------------- │                                │
+│  ┌────────────┐   │    │ Despesas (Liq/Emp por Subf.) │                                │
+│  │sk_municipio├───┘    │ Matrículas, Docentes, Turmas │                                │
+│  └────────────┘        │ IDEB, Metas, SAEB, INSE      │                                │
+│                        └──────────────┬───────────────┘                                │
+└───────────────────────────────────────┼────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+                       [ VIEWS ANALÍTICAS & KPIS ]
+                       ├── vw_fato_educacao_kpis
+                       └── vw_benchmark_municipal_estadual
+                                        │
+                                        ▼
+                         [ STREAMLIT DASHBOARD (app.py) ]
+                       ├── 1. Visão Executiva (Mandato & Orçamento)
+                       ├── 2. Diagnóstico & Peer Group (Custo x IDEB)
+                       └── 3. Responsabilidade Federativa & SAEB
+```
 ---
 
 ## 🏛️ Modelagem Dimensional (Star Schema)
@@ -96,11 +97,11 @@ As rotinas de extração residem no diretório `etl/`:
 
 | Fonte | Módulo ETL | Formato Origem | Procedimentos Técnicos |
 | :--- | :--- | :--- | :--- |
-| **Siconfi / STN** | `etl_siconfi_despesas.py` | API REST (JSON) | Coleta das despesas do RREO Anexo 02 (6º bimestre) com *checkpointing* em disco para retomada automática de falhas de conexão e expressões regulares para isolamento de rubricas contábeis. |
-| **Censo Escolar / INEP** | `etl_censo_sinopse.py` | Planilhas `.ods` | Leitura das Sinopses Estatísticas da Educação Básica com *engine* `calamine`, compatibilizando quebras históricas de layout e agregando matrículas, turmas, docentes e escolas. |
-| **IDEB & SAEB / INEP** | `etl_inep_qualidade.py` | Planilhas `.xlsx` / `.ods` | Resolução de cabeçalhos hierárquicos e células mescladas por *forward fill* horizontal, transpondo séries de avaliação de formato largo para registros normalizados. |
-| **INSE / INEP** | `etl_inep_inse.py` | `.parquet` / `.csv` | Filtragem para o total municipal consolidado (`tipo_localizacao = 0`) e classificação do escore contínuo em 8 faixas de valor (*Value Bands* do Nível I ao VIII). |
-| **Entes / IBGE** | `etl_entes.py` | API REST (JSON) | Obtenção do cadastro de entes federativos, padronização do código IBGE de 7 dígitos e mapeamento geográfico base. |
+| **Siconfi / STN** | `siconfi.py` | API REST (JSON) | Coleta das despesas do RREO Anexo 02 (6º bimestre) com *checkpointing* em disco para retomada automática de falhas de conexão e expressões regulares para isolamento de rubricas contábeis. |
+| **Censo Escolar / INEP** | `sinopse.py` | Planilhas `.ods` | Leitura das Sinopses Estatísticas da Educação Básica com *engine* `calamine`, compatibilizando quebras históricas de layout e agregando matrículas, turmas, docentes e escolas. |
+| **IDEB & SAEB / INEP** | `ideb.py` | Planilhas `.xlsx` / `.ods` | Resolução de cabeçalhos hierárquicos e células mescladas por *forward fill* horizontal, transpondo séries de avaliação de formato largo para registros normalizados. |
+| **INSE / INEP** | `inse.py` | `.parquet` / `.csv` | Filtragem para o total municipal consolidado (`tipo_localizacao = 0`) e classificação do escore contínuo em 8 faixas de valor (*Value Bands* do Nível I ao VIII). |
+| **Entes / IBGE** | `entes.py` | API REST (JSON) | Obtenção do cadastro de entes federativos, padronização do código IBGE de 7 dígitos e mapeamento geográfico base. |
 
 ---
 
@@ -149,7 +150,9 @@ O painel analítico (`app.py`) foi estruturado em Streamlit com Plotly em torno 
 │   ├── rreo.py                     # Ingestão do RREO Anexo 02 (Siconfi/STN)
 │   ├── sinose.py                   # Processamento das Sinopses Estatísticas (INEP)
 │   ├── inep.py                     # Extração do IDEB, Metas e SAEB (INEP)
-│   └── inse.py                     # Extração e categorização do INSE (INEP)
+│   ├── inse.py                     # Extração e categorização do INSE (INEP)
+│   ├── gold.py                     # Cria arquivos da camada gold
+│   └── load_goad_supabase.py       # Realiza insert no supabase
 └── data/
     ├── raw/                        # Repositório de dados brutos (Camada Bronze)
     ├── silver/                     # Bases limpas e normalizadas em CSV (Camada Staging)

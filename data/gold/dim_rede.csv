@@ -1,0 +1,5 @@
+sk_rede,cod_rede,nome_rede,esfera_governamental
+1,1,Federal,Pública Federal
+2,2,Estadual,Pública Estadual
+3,3,Municipal,Pública Municipal
+4,0,Total,Consolidado do Território
