@@ -111,7 +111,7 @@ Durante o desenvolvimento dos pipelines, foram identificados limites operacionai
 
 1. **Consumo Excessivo de Memória RAM (Pipeline das Sinopses do INEP):**
    * Os arquivos `.ods` das Sinopses Estatísticas agregam dezenas de abas com dezenas de milhares de linhas para todo o território nacional. 
-   * A tentativa de carregar e inspecionar essas pastas de trabalho em memória através do Pandas e Calamine gera picos severos de consumo de RAM, com risco de travamento (*Out Of Memory - OOM*) em ambientes com menos de 8 GB livres.
+   * A tentativa de carregar e inspecionar essas pastas de trabalho em memória através do Pandas e Calamine gera picos severos de consumo de RAM, com risco de travamento (*Out Of Memory - OOM*) em ambientes com menos de 24 GB livres.
    * *Mitigação Provisória:* A extração atual foi simplificada para buscar apenas as variáveis sintéticas centrais das etapas regulares nos municípios da amostra.
    * *Necessidade de Refatoração:* Implementar um carregamento estritamente seletivo de abas com liberação explícita de memória (`gc.collect()`), particionamento anual isolado e conversão prévia dos arquivos `.ods` em arquivos colunares compactados (`.parquet`) logo na camada Bronze.
 
