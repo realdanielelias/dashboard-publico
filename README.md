@@ -4,6 +4,8 @@ Solução de Engenharia de Dados e *Business Intelligence* voltada à auditoria,
 
 O projeto implementa uma **Arquitetura Medalhão (Bronze/Silver/Gold)** articulada a um **Modelo Dimensional (Star Schema)** desenhado segundo as diretrizes clássicas de Ralph Kimball, integrando dados fiscais e orçamentários (Siconfi/STN), demográficos e avaliativos (INEP/MEC) e territoriais/cadastrais (IBGE). A camada analítica é persistida em **PostgreSQL (Supabase)** e consumida por uma interface em **Streamlit** com **Plotly**.
 
+Link para teste: https://dashboard-publico-test.streamlit.app/
+
 ---
 
 ## 🎯 Recorte Territorial e Metodologia de Pareamento
