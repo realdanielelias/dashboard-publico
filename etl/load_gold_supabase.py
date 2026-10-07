@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from supabase import create_client
 
-# Definir diretorios de trabalho
+# Configurar diretórios de trabalho
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRETS_PATH = BASE_DIR / ".streamlit" / "secrets.toml"
 DIR_GOLD = BASE_DIR / "data" / "gold"
