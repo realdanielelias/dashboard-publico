@@ -62,3 +62,79 @@ O fluxo de processamento organiza-se em três camadas de maturidade:
                        ├── 1. Visão Executiva (Mandato & Orçamento)
                        ├── 2. Diagnóstico & Peer Group (Custo x IDEB)
                        └── 3. Responsabilidade Federativa & SAEB
+```
+## 🏛️ Modelagem Dimensional (Star Schema)
+
+A modelagem segue estritamente os princípios do Capítulo 2 do *The Data Warehouse Toolkit* (Kimball & Ross):
+
+### Declaração do Grão
+> **Um snapshot anual do encerramento fiscal, demográfico e pedagógico por Município (`sk_municipio`), por Exercício (`sk_tempo`) e por Rede de Ensino (`sk_rede`).**
+
+### 1. Tabelas de Dimensão (Conformed & Flattened Dimensions)
+* **`dim_municipio`:** Dimensão territorial desnormalizada (*anti-snowflake*). Reúne código IBGE, nome do município, UF, região geográfica, população recenseada no Censo 2022, faixas de porte populacional (*value bands*) e os rótulos de grupo analítico (*Peer Grouping*).
+* **`dim_tempo`:** Dimensão temporal anual abrangendo a série de 2015 a 2025, incorporando marcadores de ciclo bienal do SAEB (`eh_ano_saeb`), década e quinquênio.
+* **`dim_rede`:** Dimensão com as esferas administrativas analisadas (Municipal, Estadual, Federal e Total Consolidado do Território).
+
+### 2. Tabela Fato Central: `fato_execucao_educacional`
+* **Fatos Totalmente Aditivos:** Valores empenhados e liquidados na Função 12, Subfunção 361 (Ensino Fundamental) e Subfunção 365 (Educação Infantil); total de alunos avaliados no INSE.  
+  *Regra de Governança Fiscal:* As despesas orçamentárias municipais só possuem valor quando `sk_rede = 3` (Municipal). Para as redes Estadual e Total, os valores são gravados estritamente como `NULL`, prevenindo duplicações de valores (*double counting*) em operações `SUM()`.
+* **Fatos Semi-Aditivos:** Contagens de capacidade física e estoque censitário — matrículas por etapa (creche, pré-escola, anos iniciais e finais), corpos docentes, turmas e escolas ativas.
+* **Fatos Não Aditivos e Índices:** Notas observadas do IDEB, metas projetadas, taxas de rendimento escolar ($P$), médias padronizadas do SAEB ($N$) e escore socioeconômico contínuo do INSE.
+
+### 3. Camada Semântica (Views Analíticas no PostgreSQL)
+Para evitar cálculos pesados e falhas matemáticas na interface visual, duas *views* foram implementadas no banco:
+* **`vw_fato_educacao_kpis`:** Calcula dinamicamente o Custo Aluno-Ano por etapa completa (evitando divisão por zero via `NULLIF`), os Restos a Pagar Não Processados (RPNP) potenciais e a distância em relação às metas do IDEB:
+
+$$\text{Custo Aluno Fundamental} = \frac{\text{Despesa Liquidada (Subf. 361)}}{\text{Matrículas (Anos Iniciais + Anos Finais)}}$$
+
+$$\text{Custo Aluno Infantil} = \frac{\text{Despesa Liquidada (Subf. 365)}}{\text{Matrículas (Creche + Pré-Escola)}}$$
+
+$$\Delta\text{IDEB} = \text{IDEB Observado} - \text{Meta Projetada}$$
+
+* **`vw_benchmark_municipal_estadual`:** Pivota os indicadores no mesmo município e ano, alinhando a rede municipal e a rede estadual lado a lado para viabilizar comparações territoriais imediatas no Streamlit.
+
+---
+
+## 📡 Fontes de Dados e Pipelines de ETL
+
+As rotinas de extração residem no diretório `etl/`:
+
+| Fonte | Módulo ETL | Formato Origem | Procedimentos Técnicos |
+| :--- | :--- | :--- | :--- |
+| **Siconfi / STN** | `rreo.py` | API REST (JSON) | Coleta das despesas do RREO Anexo 02 (6º bimestre) com *checkpointing* em disco para retomada automática de falhas de conexão e expressões regulares para isolamento de rubricas contábeis. |
+| **Censo Escolar / INEP** | `sinopse.py` | Planilhas `.ods` | Leitura das Sinopses Estatísticas da Educação Básica com *engine* `calamine`, compatibilizando quebras históricas de layout e agregando matrículas, turmas, docentes e escolas. |
+| **IDEB & SAEB / INEP** | `ideb.py` | Planilhas `.xlsx` / `.ods` | Resolução de cabeçalhos hierárquicos e células mescladas por *forward fill* horizontal, transpondo séries de avaliação de formato largo para registros normalizados. |
+| **INSE / INEP** | `inse.py` | `.parquet` / `.csv` | Filtragem para o total municipal consolidado (`tipo_localizacao = 0`) e classificação do escore contínuo em 8 faixas de valor (*Value Bands* do Nível I ao VIII). |
+| **Entes / IBGE** | `entes.py` | API REST (JSON) | Obtenção do cadastro de entes federativos, padronização do código IBGE de 7 dígitos e mapeamento geográfico base. |
+
+---
+
+## 🖥️ Estado Atual da Interface Visual (Dashboard como Prova de Conceito)
+
+O painel analítico (`app.py`) foi estruturado em Streamlit com Plotly em torno de 3 camadas de decisão:
+
+1. **Visão Executiva (Mandato & Orçamento):** Apresenta métricas consolidadas de despesa liquidada na Educação, saldo potencial de Restos a Pagar Não Processados (RPNP), Custos Aluno-Ano por etapa e taxa de cumprimento da meta do IDEB.
+2. **Diagnóstico & Peer Group (Custo x Resultado):** Gráfico de dispersão espacial interativo relacionando Custo Aluno Fundamental e nota do IDEB, ponderado pelo tamanho populacional e categorizado por grupo de controle e nível INSE.
+3. **Responsabilidade Federativa & SAEB:** Séries temporais comparando a trajetória de proficiência e aprovação da rede municipal frente à rede estadual inserida no mesmo município.
+
+---
+
+## 📁 Estrutura do Repositório
+
+```text
+├── app.py                          # Aplicação interativa em Streamlit
+├── requirements.txt                # Dependências homologadas do ecossistema Python
+├── schema.sql                      # Script DDL completo: Dimensões, Fato, Sentinelas e Views
+├── etl/
+│   ├── entes.py                    # Extração cadastral de municípios (IBGE)
+│   ├── rreo.py                     # Ingestão do RREO Anexo 02 (Siconfi/STN)
+│   ├── sinopse.py                  # Processamento das Sinopses Estatísticas (INEP)
+│   ├── ideb.py                     # Extração do IDEB, Metas e SAEB (INEP)
+│   ├── inse.py                     # Extração e categorização do INSE (INEP)
+│   ├── gold.py                     # Criação dos artefatos da modelagem dimensional
+│   └── load_gold_supabase.py       # Carga e persistência no banco PostgreSQL (Supabase)
+└── data/
+    ├── raw/                        # Repositório de dados brutos (Camada Bronze)
+    ├── silver/                     # Bases limpas e normalizadas em CSV (Camada Staging)
+    └── gold/                       # Artefatos exportados da modelagem final (Camada Gold)
+```
