@@ -20,7 +20,7 @@ st.set_page_config(
 )
 
 
-# Conectar ao Supabase usando credenciais seguras
+# Conectar ao Supabase usando credenciais 
 @st.cache_resource
 def init_connection():
   url = st.secrets["supabase"]["url"]
@@ -31,7 +31,7 @@ def init_connection():
 supabase = init_connection()
 
 
-# Carregar dados consolidados das views analiticas da camada Gold
+# Carregar dados consolidados das views da camada Gold
 @st.cache_data(ttl=600)
 def carregar_dados_dw():
   # Consultar view de KPIs gerais
@@ -680,10 +680,10 @@ with tab_diag:
           f" disponíveis para {ano_sel}."
       )
 
-  # 6. Benchmark de Inclusao e Composicao de Matriculas com tratamento defensivo
+  # 6. Benchmark de Inclusao e Composicao de Matriculas
   st.markdown("#### 6. Compromisso Social: Taxa de Inclusão Escolar")
 
-  # Extrair colunas com fallback defensivo para series de zeros
+  # Extrair colunas com fallback para series de zeros
   mat_esp = df_comp.get(
       "mat_especial_classes_comuns", pd.Series(0, index=df_comp.index)
   ).fillna(0)
