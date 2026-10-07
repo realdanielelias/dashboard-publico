@@ -776,10 +776,28 @@ with tab_pedag:
       )
 
       reg_fato = df_mun_ano.iloc[0] if not df_mun_ano.empty else {}
-      lp_ini = reg_fato.get("saeb_lp_iniciais") or 0
-      mat_ini = reg_fato.get("saeb_mat_iniciais") or 0
-      lp_fin = reg_fato.get("saeb_lp_finais") or 0
-      mat_fin = reg_fato.get("saeb_mat_finais") or 0
+
+      # Sanitizacao segura contra NaN
+      lp_ini = (
+          reg_fato.get("saeb_lp_iniciais")
+          if pd.notna(reg_fato.get("saeb_lp_iniciais"))
+          else 0
+      )
+      mat_ini = (
+          reg_fato.get("saeb_mat_iniciais")
+          if pd.notna(reg_fato.get("saeb_mat_iniciais"))
+          else 0
+      )
+      lp_fin = (
+          reg_fato.get("saeb_lp_finais")
+          if pd.notna(reg_fato.get("saeb_lp_finais"))
+          else 0
+      )
+      mat_fin = (
+          reg_fato.get("saeb_mat_finais")
+          if pd.notna(reg_fato.get("saeb_mat_finais"))
+          else 0
+      )
 
       if (lp_ini + mat_ini + lp_fin + mat_fin) > 0:
         fig_curr = go.Figure(
@@ -789,12 +807,18 @@ with tab_pedag:
                     x=["Anos Iniciais (5º ano)", "Anos Finais (9º ano)"],
                     y=[lp_ini, lp_fin],
                     marker_color="#3B82F6",
+                    text=[f"{lp_ini:.1f}" if lp_ini > 0 else "N/A",
+                          f"{lp_fin:.1f}" if lp_fin > 0 else "N/A"],
+                    textposition="auto",
                 ),
                 go.Bar(
                     name="Matemática",
                     x=["Anos Iniciais (5º ano)", "Anos Finais (9º ano)"],
                     y=[mat_ini, mat_fin],
                     marker_color="#10B981",
+                    text=[f"{mat_ini:.1f}" if mat_ini > 0 else "N/A",
+                          f"{mat_fin:.1f}" if mat_fin > 0 else "N/A"],
+                    textposition="auto",
                 ),
             ]
         )
@@ -811,63 +835,88 @@ with tab_pedag:
         st.info("Notas do SAEB por disciplina não disponíveis neste exercício.")
 
     with c_p2:
-      # 8. Gargalo Transicional: Comparacao dos Anos Iniciais para os Finais
+      # 8. Gargalo Transicional (Anos Iniciais vs. Finais)
       st.markdown("#### 8. Gargalo Transicional (Anos Iniciais vs. Finais)")
 
       ideb_ini = reg_fato.get("ideb_iniciais")
       ideb_fin = reg_fato.get("ideb_finais")
+
       rend_ini = (
-          (reg_fato.get("rendimento_iniciais") or 0) * 100
-          if reg_fato.get("rendimento_iniciais")
+          (reg_fato.get("rendimento_iniciais") * 100)
+          if pd.notna(reg_fato.get("rendimento_iniciais"))
           else None
       )
       rend_fin = (
-          (reg_fato.get("rendimento_finais") or 0) * 100
-          if reg_fato.get("rendimento_finais")
+          (reg_fato.get("rendimento_finais") * 100)
+          if pd.notna(reg_fato.get("rendimento_finais"))
           else None
       )
 
-      if pd.notna(ideb_ini) and pd.notna(ideb_fin):
-        fig_trans = go.Figure()
+      # Se ao menos uma das etapas tiver IDEB registrado, renderiza o grafico
+      if pd.notna(ideb_ini) or pd.notna(ideb_fin):
+        etapas = []
+        notas_ideb = []
+        taxas_aprov = []
+
+        if pd.notna(ideb_ini):
+          etapas.append("Anos Iniciais")
+          notas_ideb.append(ideb_ini)
+          taxas_aprov.append(rend_ini)
+
+        if pd.notna(ideb_fin):
+          etapas.append("Anos Finais")
+          notas_ideb.append(ideb_fin)
+          taxas_aprov.append(rend_fin)
+
+        fig_trans = make_subplots(specs=[[{"secondary_y": True}]])
         fig_trans.add_trace(
             go.Bar(
-                x=["Anos Iniciais", "Anos Finais"],
-                y=[ideb_ini, ideb_fin],
+                x=etapas,
+                y=notas_ideb,
                 name="IDEB Sintético",
                 marker_color="#6366F1",
-                yaxis="y",
-            )
+            ),
+            secondary_y=False,
         )
-        if rend_ini is not None and rend_fin is not None:
+
+        if any(t is not None for t in taxas_aprov):
           fig_trans.add_trace(
               go.Scatter(
-                  x=["Anos Iniciais", "Anos Finais"],
-                  y=[rend_ini, rend_fin],
+                  x=etapas,
+                  y=taxas_aprov,
                   name="Taxa de Aprovação (%)",
                   mode="lines+markers+text",
-                  text=[f"{rend_ini:.1f}%", f"{rend_fin:.1f}%"],
+                  text=[f"{t:.1f}%" if t else "" for t in taxas_aprov],
                   textposition="top center",
                   marker=dict(color="#EF4444", size=10),
-                  yaxis="y2",
-              )
+              ),
+              secondary_y=True,
           )
+
         fig_trans.update_layout(
             template="plotly_white",
             height=380,
-            yaxis=dict(title="Nota IDEB", range=[0, 10], side="left"),
-            yaxis2=dict(
-                title="Aprovação (%)",
-                range=[70, 105],
-                side="right",
-                overlaying="y",
-                showgrid=False,
-            ),
             legend=dict(orientation="h", y=1.1, x=0.5, xanchor="center"),
             margin=dict(l=30, r=20, t=30, b=30),
         )
+        fig_trans.update_yaxes(
+            title_text="Nota IDEB", range=[0, 10], secondary_y=False
+        )
+        fig_trans.update_yaxes(
+            title_text="Aprovação (%)",
+            range=[70, 105],
+            showgrid=False,
+            secondary_y=True,
+        )
         st.plotly_chart(fig_trans, use_container_width=True)
+
+        if len(etapas) == 1:
+          st.caption(
+              "ℹ️ A rede municipal oferta exclusivamente os Anos Iniciais;"
+              " a etapa de Anos Finais é atendida pela rede estadual."
+          )
       else:
-        st.info("Dados de transição entre etapas não consolidados neste ano.")
+        st.info("Dados de avaliação pedagógica não disponíveis para este ano.")
 
     # 9. Trajetoria Historica de Gap Territorial
     st.markdown(
