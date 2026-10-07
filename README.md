@@ -150,8 +150,8 @@ O painel analítico (`app.py`) foi estruturado em Streamlit com Plotly em torno 
 ├── etl/
 │   ├── entes.py                    # Extração cadastral de municípios
 │   ├── rreo.py                     # Ingestão do RREO Anexo 02 (Siconfi/STN)
-│   ├── sinose.py                   # Processamento das Sinopses Estatísticas (INEP)
-│   ├── inep.py                     # Extração do IDEB, Metas e SAEB (INEP)
+│   ├── sinopse.py                   # Processamento das Sinopses Estatísticas (INEP)
+│   ├── ideb.py                     # Extração do IDEB, Metas e SAEB (INEP)
 │   ├── inse.py                     # Extração e categorização do INSE (INEP)
 │   ├── gold.py                     # Cria arquivos da camada gold
 │   └── load_goad_supabase.py       # Realiza insert no supabase
