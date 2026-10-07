@@ -99,7 +99,7 @@ As rotinas de extração residem no diretório `etl/`:
 
 ---
 
-## 🖥️ Estado Atual da Interface Visual (Dashboard como Prova de Conceito)
+## 🖥️ Interface Visual
 
 O painel analítico (`app.py`) foi estruturado em Streamlit com Plotly em torno de 3 camadas de decisão:
 
