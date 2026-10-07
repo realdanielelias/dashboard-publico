@@ -10,12 +10,12 @@ O projeto implementa uma **Arquitetura Medalhão (Bronze/Silver/Gold)** articula
 
 ## 🎯 Recorte Territorial e Metodologia de Pareamento
 
-Para viabilizar comparações justas e neutralizar disparidades de escala demográfica e capacidade arrecadatória, a pesquisa adota o município de **Marília (SP)** como estudo de caso central e delimita uma amostra de controle de **26 municípios paulistas**, estratificados em 4 agrupamentos analíticos:
+Para viabilizar comparações justas e neutralizar disparidades de escala demográfica e capacidade arrecadatória, a pesquisa adota o município de **Marília (SP)** como objeto de estudo central e delimita uma amostra de controle de **26 municípios paulistas**, estratificados em 4 agrupamentos analíticos:
 
 1. **Polo Central:** Marília (núcleo da investigação).
 2. **Região Imediata de Marília (13 municípios lindeiros):** Garça, Pompeia, Vera Cruz, Oriente, Echaporã, Ocauçu, Lupércio, Álvaro de Carvalho, Alvinlândia, Guaimbê, Júlio Mesquita, Quintana e Gália.
 3. **Polos Regionais da Macrorregião Centro-Oeste (5 municípios):** Bauru, Assis, Tupã, Ourinhos e Lins.
-4. **Pares Homólogos Estaduais (7 municípios de controle):** Municípios selecionados por convergência de porte populacional (130 mil a 260 mil habitantes), receita orçamentária *per capita* e perfil socioeconômico semelhante — Presidente Prudente, Araçatuba, São Carlos, Araraquara, Rio Claro, Botucatu e Jaú.
+4. **Pares Homólogos Estaduais (7 municípios de controle):** Municípios selecionados por convergência de porte populacional (130 mil a 260 mil habitantes), receita orçamentária *per capita* e perfil socioeconômico semelhante como Presidente Prudente, Araçatuba, São Carlos, Araraquara, Rio Claro, Botucatu e Jaú.
 
 ---
 
@@ -25,7 +25,7 @@ O fluxo de processamento organiza-se em três camadas de maturidade:
 
 * **Camada Raw (Bronze / Dados Brutos):** Repositório local dos arquivos originais não modificados (`data/raw/`), compreendendo extrações em `.json` da API do Siconfi, planilhas heterogêneas `.ods` do INEP.
 * **Camada Staging (Silver / Dados Higienizados):** Tabelas normalizadas e limpas (`data/silver/stg_*.csv`), onde são resolvidos problemas de células mescladas, inconsistências de tipo, variações de nomenclatura contábil e conversão de formatos amplos (*wide*) para longos (*tidy*).
-* **Camada Analytics (Gold / Data Warehouse Dimensional):** Estrutura modelada em Esquema Estrela no PostgreSQL, composta por dimensões conformes desnormalizadas, tabela fato de snapshot consolidada, chaves substitutas inteiras (`sk_`), registros sentinela (`-1`) e *views* analíticas para pré-computação de KPIs.
+* **Camada Analytics (Gold / Dados Para Consumo):** Estrutura modelada em Esquema Estrela no PostgreSQL, composta por dimensões conformes desnormalizadas, tabela fato de snapshot consolidada, chaves substitutas inteiras (`sk_`), registros sentinela (`-1`) e *views* analíticas para pré-computação de KPIs.
 
 ```text
 [ Siconfi (API) ]    [ Censo INEP (.ods) ]    [ IDEB/SAEB (.xlsx) ]    [ INSE (.parquet) ]
@@ -63,7 +63,7 @@ O fluxo de processamento organiza-se em três camadas de maturidade:
                        ├── 2. Diagnóstico & Peer Group (Custo x IDEB)
                        └── 3. Responsabilidade Federativa & SAEB
 ```
-## 🏛️ Modelagem Dimensional (Star Schema)
+## 🏛️ Modelagem Dimensional
 
 A modelagem segue estritamente os princípios do Capítulo 2 do *The Data Warehouse Toolkit* (Kimball & Ross):
 
