@@ -2,7 +2,7 @@
 
 Solução de Engenharia de Dados e *Business Intelligence* voltada à auditoria, correlação e avaliação da eficiência dos investimentos públicos municipais em educação básica frente aos resultados de qualidade pedagógica e ao contexto socioeconômico em municípios paulistas.
 
-O projeto implementa uma **Arquitetura Medalhão (Bronze/Silver/Gold)** articulada a um **Modelo Dimensional (Star Schema)** desenhado segundo as diretrizes clássicas de Ralph Kimball, integrando dados fiscais e orçamentários (Siconfi/STN), demográficos e avaliativos (INEP/MEC) e territoriais/cadastrais (IBGE). A camada analítica é persistida em **PostgreSQL (Supabase)** e consumida por uma interface em **Streamlit** com **Plotly**.
+O projeto implementa uma **Arquitetura Medalhão (Bronze/Silver/Gold)** articulada a um **Modelo Dimensional (Star Schema)** desenhado segundo as diretrizes de Ralph Kimball, integrando dados fiscais e orçamentários (Siconfi/STN), demográficos e avaliativos (INEP/MEC) e territoriais/cadastrais (IBGE). A camada analítica é persistida em **PostgreSQL (Supabase)** e consumida por uma interface em **Streamlit**.
 
 🔗 **Link para teste:** https://dashboard-publico-test.streamlit.app/
 
