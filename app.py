@@ -10,6 +10,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from supabase import create_client
+from plotly.subplots import make_subplots
 
 # Configurar layout e titulo da pagina
 st.set_page_config(
