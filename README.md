@@ -23,7 +23,7 @@ Para viabilizar comparações justas e neutralizar disparidades de escala demogr
 
 O fluxo de processamento organiza-se em três camadas de maturidade:
 
-* **Camada Raw (Bronze / Dados Brutos):** Repositório local dos arquivos originais não modificados (`data/raw/`), compreendendo extrações em `.json` da API do Siconfi, planilhas heterogêneas `.ods` e `.xlsx` do INEP e microdados compactados em `.parquet`.
+* **Camada Raw (Bronze / Dados Brutos):** Repositório local dos arquivos originais não modificados (`data/raw/`), compreendendo extrações em `.json` da API do Siconfi, planilhas heterogêneas `.ods` do INEP.
 * **Camada Staging (Silver / Dados Higienizados):** Tabelas normalizadas e limpas (`data/silver/stg_*.csv`), onde são resolvidos problemas de células mescladas, inconsistências de tipo, variações de nomenclatura contábil e conversão de formatos amplos (*wide*) para longos (*tidy*).
 * **Camada Analytics (Gold / Data Warehouse Dimensional):** Estrutura modelada em Esquema Estrela no PostgreSQL, composta por dimensões conformes desnormalizadas, tabela fato de snapshot consolidada, chaves substitutas inteiras (`sk_`), registros sentinela (`-1`) e *views* analíticas para pré-computação de KPIs.
 
